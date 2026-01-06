@@ -1,0 +1,56 @@
+---
+- name: Deploy Node.js app from GitHub to EC2
+  hosts: all
+  become: yes
+
+  vars:
+    app_dir: /home/ubuntu/node-app
+    repo_url: https://github.com/08021976-22022006/To-Do-With-Ansible.git
+    app_name: node-app
+
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - git
+          - nodejs
+          - npm
+        state: present
+
+    - name: Install PM2 globally
+      npm:
+        name: pm2
+        global: yes
+
+    - name: Remove existing app folder
+      file:
+        path: "{{ app_dir }}"
+        state: absent
+
+    - name: Clone application from GitHub
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: master
+
+    - name: Install npm dependencies
+      command: npm install
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Stop existing PM2 app (if any)
+      shell: pm2 delete {{ app_name }}
+      ignore_errors: yes
+
+    - name: Start Node app with PM2
+      shell: pm2 start server.js --name {{ app_name }}
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Save PM2 process list
+      shell: pm2 save
