@@ -10,8 +10,10 @@ async function loadTodos() {
 
     li.innerHTML = `
       <span>${todo.text}</span>
-      <button onclick="editTodo(${todo.id}, '${todo.text}')">Edit</button>
-      <button onclick="deleteTodo(${todo.id})">Delete</button>
+      <div class="actions">
+        <button onclick="editTodo(${todo.id}, '${todo.text}')">Edit</button>
+        <button onclick="deleteTodo(${todo.id})">Delete</button>
+      </div>
     `;
 
     list.appendChild(li);
@@ -20,13 +22,15 @@ async function loadTodos() {
 
 async function addTodo() {
   const input = document.getElementById("todoInput");
-  const text = input.value;
+  const text = input.value.trim();
 
   if (!text) return;
 
   await fetch("/todos", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({ text })
   });
 
@@ -35,13 +39,16 @@ async function addTodo() {
 }
 
 async function editTodo(id, oldText) {
-  const newText = prompt("Update todo:", oldText);
-  if (!newText) return;
+  const newText = prompt("Edit task:", oldText);
+
+  if (!newText || newText.trim() === "") return;
 
   await fetch(`/todos/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: newText })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ text: newText.trim() })
   });
 
   loadTodos();
@@ -55,4 +62,5 @@ async function deleteTodo(id) {
   loadTodos();
 }
 
+// Load todos on page load
 loadTodos();

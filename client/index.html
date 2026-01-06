@@ -7,12 +7,20 @@
 </head>
 <body>
 
-  <h1>📝 Todo App</h1>
+  <div class="container">
+    <h2>Todo List</h2>
 
-  <input type="text" id="todoInput" placeholder="Enter task">
-  <button onclick="addTodo()">Add</button>
+    <div class="input-group">
+      <input 
+        type="text" 
+        id="todoInput" 
+        placeholder="Add a new task"
+      >
+      <button onclick="addTodo()">Add</button>
+    </div>
 
-  <ul id="todoList"></ul>
+    <ul id="todoList"></ul>
+  </div>
 
   <script src="script.js"></script>
 </body>
